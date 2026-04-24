@@ -72,6 +72,19 @@
             border-radius: 4px;
             display: none; 
         }
+
+        /* Estilo do Mapa */
+        #mapa-container {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        canvas {
+            background: #dcdde1;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            max-width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -129,6 +142,11 @@
     </form>
 
     <div class="result" id="resultado"></div>
+    
+    <div id="mapa-container">
+        <h3>Mapa Conceitual da Cidade (Vista Superior)</h3>
+        <canvas id="mapaCanvas" width="600" height="400"></canvas>
+    </div>
 </div>
 
 <script>
@@ -171,13 +189,58 @@
             🔥 ΔTemperatura: ${deltaT.toFixed(2)} °C
         `;
         
-        // Rola a página suavemente para o resultado
+        // Exibe o mapa e gera o desenho
+        document.getElementById("mapa-container").style.display = "block";
+        desenharCidade(n1, n2, n3, n4, arvores);
+
         resDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function desenharCidade(n1, n2, n3, n4, arvores) {
+        const canvas = document.getElementById("mapaCanvas");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Desenhar Prédios (como retângulos cinzas)
+        const totalPredios = n1 + n2 + n3 + n4;
+        const maxExibicao = 200; // Limite visual para não travar o navegador
+        
+        function desenharLote(qtd, cor) {
+            let desenhados = 0;
+            while(desenhados < qtd && desenhados < maxExibicao) {
+                let x = Math.random() * (canvas.width - 20);
+                let y = Math.random() * (canvas.height - 20);
+                let size = 5 + Math.random() * 15;
+                ctx.fillStyle = cor;
+                ctx.fillRect(x, y, size, size);
+                ctx.strokeStyle = "#7f8c8d";
+                ctx.strokeRect(x, y, size, size);
+                desenhados++;
+            }
+        }
+
+        desenharLote(n1, "#bdc3c7"); // Baixos
+        desenharLote(n2, "#95a5a6"); // Médios
+        desenharLote(n3, "#7f8c8d"); // Altos
+        desenharLote(n4, "#2c3e50"); // Muito altos
+
+        // Desenhar Árvores (pontos verdes)
+        let arvoresDesenhadas = 0;
+        while(arvoresDesenhadas < arvores && arvoresDesenhadas < 400) {
+            let x = Math.random() * canvas.width;
+            let y = Math.random() * canvas.height;
+            ctx.beginPath();
+            ctx.arc(x, y, 3, 0, Math.PI * 2);
+            ctx.fillStyle = "#27ae60";
+            ctx.fill();
+            arvoresDesenhadas++;
+        }
     }
 
     function limpar() {
         document.getElementById("simForm").reset();
         document.getElementById("resultado").style.display = "none";
+        document.getElementById("mapa-container").style.display = "none";
     }
 </script>
 
