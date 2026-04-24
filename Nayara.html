@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Simulador Urbano - Cidade 10k</title>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 40px;
+    background: #f5f5f5;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 900px;
+    margin: auto;
+}
+
+h2 {
+    margin-top: 30px;
+}
+
+input {
+    width: 80px;
+    margin: 5px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e8f4ff;
+    border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Simulador Urbano - Cidade de 10.000 habitantes</h1>
+
+<h2>Edificações</h2>
+
+<div>
+<p>Até 5 m:</p>
+Qtd: <input id="n1"> Largura: <input id="w1"> Profundidade: <input id="d1">
+
+<p>Até 20 m:</p>
+Qtd: <input id="n2"> Largura: <input id="w2"> Profundidade: <input id="d2">
+
+<p>Até 50 m:</p>
+Qtd: <input id="n3"> Largura: <input id="w3"> Profundidade: <input id="d3">
+
+<p>> 50 m:</p>
+Qtd: <input id="n4"> Largura: <input id="w4"> Profundidade: <input id="d4">
+</div>
+
+<h2>Parâmetros ambientais</h2>
+
+<p>Taxa permeável (%): <input id="perm"></p>
+<p>Número de árvores: <input id="trees"></p>
+
+<button onclick="simular()">Simular</button>
+
+<div class="result" id="resultado"></div>
+
+</div>
+
+<script>
+
+function getVal(id) {
+    return parseFloat(document.getElementById(id).value) || 0;
+}
+
+function simular() {
+
+    let n1 = getVal("n1"), w1 = getVal("w1"), d1 = getVal("d1");
+    let n2 = getVal("n2"), w2 = getVal("w2"), d2 = getVal("d2");
+    let n3 = getVal("n3"), w3 = getVal("w3"), d3 = getVal("d3");
+    let n4 = getVal("n4"), w4 = getVal("w4"), d4 = getVal("d4");
+
+    let permeabilidade = getVal("perm") / 100;
+    let arvores = getVal("trees");
+
+    let pop = 10000;
+
+    let A1 = n1 * w1 * d1;
+    let A2 = n2 * w2 * d2;
+    let A3 = n3 * w3 * d3;
+    let A4 = n4 * w4 * d4;
+
+    let areaConstruida = A1 + A2 + A3 + A4;
+
+    let areaCidade = areaConstruida / (1 - permeabilidade);
+
+    let densidade = pop / areaCidade;
+
+    let areaPermeavel = areaCidade * permeabilidade;
+
+    let indiceVegetacao = arvores / areaCidade;
+
+    // Modelo simplificado de temperatura
+    let deltaT = (5 * (1 - permeabilidade)) + (0.0005 * densidade) - (0.1 * indiceVegetacao);
+
+    document.getElementById("resultado").innerHTML = `
+        <b>Resultados:</b><br><br>
+        Área construída: ${areaConstruida.toFixed(2)} m²<br>
+        Área total da cidade: ${areaCidade.toFixed(2)} m²<br>
+        Área permeável: ${areaPermeavel.toFixed(2)} m²<br>
+        Densidade urbana: ${densidade.toFixed(4)} hab/m²<br>
+        Índice de vegetação: ${indiceVegetacao.toFixed(6)} árvores/m²<br>
+        ΔTemperatura estimada: ${deltaT.toFixed(2)} °C
+    `;
+}
+
+</script>
+
+</body>
+</html>
